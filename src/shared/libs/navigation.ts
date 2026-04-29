@@ -1,15 +1,15 @@
 import { StaticParamList, createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import EyeHealth from "../../features/eye-health";
 import HomeScreen from "../../features/home-screen";
 import SafeZone from "../../features/safe-zone";
-import TimeSpan from "../../features/time-span";
 
 const RootStack = createNativeStackNavigator({
     initialRouteName: 'Home',
     screens: {
         Home: HomeScreen,
         SafeZone,
-        TimeSpan
+        EyeHealth
     },
     screenOptions: {
         headerShown: false,

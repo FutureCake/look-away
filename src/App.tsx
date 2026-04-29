@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useAppSetup from './shared/hooks/app-setup';
 import { Navigation } from './shared/libs/navigation';
@@ -15,8 +16,10 @@ export default function App() {
     }, [appState])
 
     return (
-        <SafeAreaProvider>
-            <Navigation />
-        </SafeAreaProvider>
+        <KeyboardProvider>
+            <SafeAreaProvider>
+                <Navigation />
+            </SafeAreaProvider>
+        </KeyboardProvider>
     );
 }

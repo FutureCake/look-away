@@ -1,17 +1,19 @@
-import { Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
+import { Pressable, PressableProps, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 export interface ButtonProps extends PressableProps {
     title: string;
+    titleStyle?: StyleProp<TextStyle>;
+    buttonStyle?: StyleProp<ViewStyle>;
 }
 
 export default function Button(props: ButtonProps) {
 
-    const { title, ...pressable } = props;
+    const { title, titleStyle, buttonStyle, ...pressable } = props;
 
     return (
         <View style={styles.container}>
-            <Pressable style={styles.button} {...pressable}>
-                <Text style={styles.title}>{title}</Text>
+            <Pressable style={[styles.button, buttonStyle]} {...pressable}>
+                <Text style={[styles.title, titleStyle]}>{title}</Text>
             </Pressable>
             <View style={styles.stack}></View>
         </View>
