@@ -1,29 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
-import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../../components/button";
 import TitledContent from "../../components/titled-content";
 import { useEyeMachine } from "../../shared/contexts/eye-context";
-import { notifications } from "../../shared/libs/notifications";
 
 export default function HomeScreen() {
 
     const nav = useNavigation();
-    const { cta, state, stateMsg, userAction, send } = useEyeMachine();
+    const { cta, stateMsg, userAction, send } = useEyeMachine();
 
     const handleMainButtonPress = () => {
         if (!userAction) return;
         send({ type: userAction });
     }
-
-    useEffect(() => {
-        const checkPermissions = async () => {
-            const status = await notifications.hasPermissions();
-            if (status === 'granted') send({ type: 'NC_ALLOWED' });
-            if (status === 'denied') send({ type: 'NC_DENIED' });
-        };
-        checkPermissions();
-    }, []);
 
     return (
         <TitledContent title={"love\nyour\neyes"} scrollPadding={80}>

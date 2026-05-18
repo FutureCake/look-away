@@ -10,6 +10,21 @@ export const eyeMachine = eyeMachineSetup.createMachine({
     }),
     states: {
         dormant: {
+            invoke: {
+                src: 'checkPermissions',
+                onDone: [
+                    {
+                        guard: ({ event }) => event.output === 'granted',
+                        target: 'alerting',
+                        actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }),
+                    },
+                    {
+                        guard: ({ event }) => event.output === 'denied',
+                        target: 'alerting_denied',
+                        actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
+                    },
+                ],
+            },
             on: {
                 NC_REQUEST: {
                     target: 'requesting_permissions',

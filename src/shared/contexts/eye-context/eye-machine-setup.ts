@@ -21,6 +21,9 @@ export const eyeMachineSetup = setup({
         events: {} as EyeEvent,
     },
     actors: {
+        checkPermissions: fromPromise(async () => {
+            return await notifications.hasPermissions();
+        }),
         setupNotifications: fromPromise(async () => {
             return await notifications.setup();
         }),
