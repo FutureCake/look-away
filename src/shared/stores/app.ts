@@ -14,7 +14,7 @@ interface AppStorage {
 export const useAppStore = create<AppStorage>()(
     persist(
         (set) => ({
-            status: 'disabled',
+            status: 'dormant',
             use24h: true,
             eyeSafeZones: [
                 { start: 1777400916352, end: 1777436946554 },

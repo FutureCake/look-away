@@ -1,8 +1,5 @@
-import { StateFrom } from 'xstate';
 import { eyeMachineSetup } from './eye-machine-setup';
 import { updatePrimaryAction } from './helpers';
-
-export type EyeState = StateFrom<typeof eyeMachine>['value'];
 
 export const eyeMachine = eyeMachineSetup.createMachine({
     initial: 'dormant',
@@ -14,22 +11,48 @@ export const eyeMachine = eyeMachineSetup.createMachine({
     states: {
         dormant: {
             on: {
+                NC_REQUEST: {
+                    target: 'requesting_permissions',
+                },
                 NC_ALLOWED: {
                     target: 'alerting',
-                    actions: updatePrimaryAction('Pause alerts', undefined)
+                    actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' })
 
                 },
                 NC_DENIED: {
                     target: 'alerting_denied',
-                    actions: updatePrimaryAction('Go to settings', 'Allow notifications, its pointless otherwise...'),
+                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
                 }
+            },
+        },
+        requesting_permissions: {
+            invoke: {
+                src: 'setupNotifications',
+                onDone: [
+                    {
+                        guard: ({ event }) => event.output === true,
+                        target: 'alerting',
+                        actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }),
+                    },
+                    {
+                        target: 'alerting_denied',
+                        actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
+                    },
+                ],
+                onError: {
+                    target: 'alerting_denied',
+                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Something weird happened... go to settings to enable notifications' }),
+                },
             },
         },
         alerting_denied: {
             on: {
+                NC_REQUEST: {
+                    actions: 'openSettings',
+                },
                 NC_ALLOWED: {
                     target: 'alerting',
-                    actions: updatePrimaryAction('Pause alerts', undefined)
+                    actions: updatePrimaryAction({ cta: 'Pause alerts' })
                 },
             }
         },
@@ -37,19 +60,19 @@ export const eyeMachine = eyeMachineSetup.createMachine({
             on: {
                 PAUSE: {
                     target: 'paused',
-                    actions: updatePrimaryAction('Resume alerts', 'Alerts paused')
+                    actions: updatePrimaryAction({ cta: 'Resume alerts', stateMessage: 'Alerts paused' })
                 },
                 NC_DENIED: {
                     target: 'alerting_denied',
-                    actions: updatePrimaryAction('Go to settings', 'Allow notifications, its pointless otherwise...'),
+                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
                 },
                 SHOULD_LOOK_AWAY: {
                     target: 'should_look_away',
-                    actions: updatePrimaryAction('Hold while looking away', 'Hold while looking away'),
+                    actions: updatePrimaryAction({ cta: 'Hold while looking away', stateMessage: 'Hold while looking away' }),
                 },
                 ENABLE_SCHEDULED_PAUSE: {
                     target: 'scheduled_pause',
-                    actions: updatePrimaryAction('Scheduled pause enabled', 'Scheduled pause enabled'),
+                    actions: updatePrimaryAction({ cta: 'Scheduled pause enabled', stateMessage: 'Scheduled pause enabled' }),
                 },
             }
         },
@@ -57,28 +80,40 @@ export const eyeMachine = eyeMachineSetup.createMachine({
             on: {
                 RESUME: {
                     target: 'alerting',
-                    actions: updatePrimaryAction('Pause alerts', undefined)
+                    actions: updatePrimaryAction({ cta: 'Pause alerts' })
                 },
                 NC_DENIED: {
                     target: 'alerting_denied',
-                    actions: updatePrimaryAction('Go to settings', 'Allow notifications, its pointless otherwise...'),
+                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
                 },
             }
         },
         scheduled_pause: {
             on: {
-                NC_DENIED: 'alerting_denied',
-                RESUME: 'alerting',
+                NC_DENIED: {
+                    target: 'alerting_denied',
+                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
+                },
+                RESUME: {
+                    target: 'alerting',
+                    actions: updatePrimaryAction({ cta: 'Pause alerts' })
+                },
             }
         },
         should_look_away: {
             on: {
-                LOOKING_AWAY: 'looking_away',
+                LOOKING_AWAY: {
+                    target: 'looking_away',
+                    actions: updatePrimaryAction({ cta: 'Yes me', stateMessage: 'Hold the button while looking away' }),
+                },
             }
         },
         looking_away: {
             on: {
-                RESUME: 'alerting',
+                RESUME: {
+                    target: 'alerting',
+                    actions: updatePrimaryAction({ cta: 'Pause alerts' })
+                },
             }
         }
     },

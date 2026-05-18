@@ -1,9 +1,16 @@
 import { isDevice } from "expo-device";
-import { AndroidImportance, cancelScheduledNotificationAsync, getPermissionsAsync, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationChannelAsync } from "expo-notifications";
+import { AndroidImportance, cancelScheduledNotificationAsync, getPermissionsAsync, PermissionStatus, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationChannelAsync } from "expo-notifications";
 import { Platform } from "react-native";
 
 export const notifications = {
-    setupNotifications: async (): Promise<boolean> => {
+
+    hasPermissions: async (): Promise<PermissionStatus> => {
+        if (isDevice) {
+            return (await getPermissionsAsync()).status;
+        }
+        return PermissionStatus.DENIED;
+    },
+    setup: async (): Promise<boolean> => {
         if (Platform.OS === 'android') {
             await setNotificationChannelAsync('loveYourEyesNotificationsChannel', {
                 name: 'loveYourEyes',

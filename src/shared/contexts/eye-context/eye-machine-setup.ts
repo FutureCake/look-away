@@ -1,9 +1,13 @@
-import { assign, setup } from "xstate";
+import { Linking } from "react-native";
+import { assign, fromPromise, setup } from "xstate";
+import { notifications } from "../../libs/notifications";
+import { EyeAction, EyeEvent } from "../../types";
 
 type Input = {
     dispatchHaptics: () => void;
     onCtaChange: (cta: string) => void;
-    onStateMessageChange: (message: string | undefined) => void;
+    onStateMessageChange: (message?: string) => void;
+    onUserActionChange: (userAction?: EyeAction) => void;
 };
 
 export const eyeMachineSetup = setup({
@@ -14,26 +18,31 @@ export const eyeMachineSetup = setup({
             cta: string,
             deps: Input,
         },
-        events: {} as
-            | { type: 'NC_ALLOWED' }
-            | { type: 'NC_DENIED' }
-            | { type: 'PAUSE' }
-            | { type: 'RESUME' }
-            | { type: 'SHOULD_LOOK_AWAY' }
-            | { type: 'LOOKING_AWAY' }
-            | { type: 'ENABLE_SCHEDULED_PAUSE' },
+        events: {} as EyeEvent,
+    },
+    actors: {
+        setupNotifications: fromPromise(async () => {
+            return await notifications.setup();
+        }),
     },
     actions: {
-        onStateMessageChange: ({ context }, params: { message: string | undefined }) => {
+        onStateMessageChange: ({ context }, params: { message?: string }) => {
             context.deps.onStateMessageChange(params.message);
         },
         onCtaChange: ({ context }, params: { cta: string }) => {
             context.deps.onCtaChange(params.cta);
         },
+        onUserActionChange: ({ context }, params: { userAction?: EyeAction }) => {
+            context.deps.onUserActionChange(params.userAction);
+        },
+        openSettings: () => {
+            Linking.openSettings();
+        },
         updatePrimary: assign(
-            ({ context }, params: { cta: string; stateMessage: string | undefined }) => {
+            ({ context }, params: { cta: string; stateMessage?: string, userAction?: EyeAction }) => {
                 context.deps.onCtaChange(params.cta);
                 context.deps.onStateMessageChange(params.stateMessage);
+                context.deps.onUserActionChange(params.userAction);
                 return {
                     cta: params.cta,
                     stateMessage: params.stateMessage,
