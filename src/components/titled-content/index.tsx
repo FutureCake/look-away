@@ -5,16 +5,17 @@ import SpacedScroll from "../spaced-scroll";
 export interface TitledContentProps extends PropsWithChildren {
     title: string;
     scrollPadding?: number;
+    spacing?: number;
     onGoBack?: () => void;
 }
 
 export default function TitledContent(props: TitledContentProps) {
 
-    const { title, scrollPadding, onGoBack, children } = props;
+    const { children, title, scrollPadding, spacing = 50, onGoBack } = props;
 
     return (
         <>
-            <SpacedScroll spacing={50} scrollPadding={onGoBack ? 150 : scrollPadding} style={styles.container}>
+            <SpacedScroll spacing={spacing} scrollPadding={onGoBack ? 150 : scrollPadding} style={styles.container}>
                 <Text style={styles.title}>{title}</Text>
                 {children}
             </SpacedScroll>

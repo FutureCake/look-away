@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     primaryActionGroup: {
-        gap: 15,
+        gap: 30,
     },
     stateMsg: {
         fontSize: 18,

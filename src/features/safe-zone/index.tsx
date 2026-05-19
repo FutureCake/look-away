@@ -11,14 +11,18 @@ import TimeSpan from "./components/time-span";
 export default function SafeZone() {
 
     const nav = useNavigation();
-    const { eyeSafeZones, use24h, set24h } = useAppStore();
-    const [editingIndex, setEditingIndex] = useState<number>();
+    const { eyeSafeZones, use24h, set24h, addEyeSafeZone, updateEyeSafeZone, removeEyeSafeZone } = useAppStore();
+    const [editingId, setEditingId] = useState<string>();
 
     return (
         <TitledContent title={"eye\nsafe\nzone"} onGoBack={nav.goBack}>
-            <Button title="Add eye safe zone" onPress={() => { }} />
+            <Button title="Add eye safe zone" onPress={() => {
+                const now = Date.now();
+                const id = addEyeSafeZone(now, now + 60 * 60 * 1000);
+                setEditingId(id);
+            }} />
             <Text style={styles.description}>{"Add a moment in time where your are away from screens to prevent us from spamming you unnecessarily.\n\nFor example while sleeping :)"}</Text>
-            {eyeSafeZones.length > 0 && (
+            {Object.keys(eyeSafeZones).length > 0 && (
                 <>
                     <ChipsGroup
                         options={[
@@ -29,21 +33,22 @@ export default function SafeZone() {
                         onSelect={(value) => set24h(value ?? false)}
                     />
                     <View style={{ gap: 20 }}>
-                        {eyeSafeZones.map((zone, index) => {
-                            if (index === editingIndex) return <EditTimeSpan
-                                key={index}
+                        {Object.entries(eyeSafeZones).map(([id, zone]) => {
+                            if (id === editingId) return <EditTimeSpan
+                                key={id}
                                 startTime={zone.start}
                                 endTime={zone.end}
                                 use24H={use24h}
-                                onCancel={() => setEditingIndex(undefined)}
-                                onSave={(timeSpan) => { setEditingIndex(undefined) }}
+                                onCancel={() => setEditingId(undefined)}
+                                onSave={(timeSpan) => { setEditingId(undefined) }}
+                                onDelete={() => { removeEyeSafeZone(id); setEditingId(undefined); }}
                             />
                             return <TimeSpan
-                                key={index}
+                                key={id}
                                 startTime={zone.start}
                                 endTime={zone.end}
                                 use24H={use24h}
-                                onPress={() => setEditingIndex(index)}
+                                onPress={() => setEditingId(id)}
                             />
                         })}
                     </View>

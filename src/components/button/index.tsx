@@ -21,12 +21,12 @@ export default function Button(props: ButtonProps) {
 }
 
 const styles = StyleSheet.create({
-    title: {
-        fontFamily: 'americanTypewriter',
-        fontSize: 16,
-    },
     container: {
         alignSelf: 'flex-start',
+    },
+    title: {
+        fontFamily: 'americanTypewriter',
+        fontSize: 22,
     },
     button: {
         borderWidth: 2,

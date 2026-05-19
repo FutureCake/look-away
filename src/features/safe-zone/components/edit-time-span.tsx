@@ -7,9 +7,12 @@ export interface EditTimeSpanProps {
     use24H: boolean;
     onSave?: (value: { startTime: number, endTime: number }) => void;
     onCancel?: () => void;
+    onDelete?: () => void;
 }
 
-export default function EditTimeSpan({ startTime, endTime, use24H, onSave, onCancel }: EditTimeSpanProps) {
+export default function EditTimeSpan({
+    startTime, endTime, use24H, onSave, onCancel, onDelete
+}: EditTimeSpanProps) {
     return (
         <View style={styles.container}>
             <View style={styles.actionsContainer}>
@@ -20,6 +23,7 @@ export default function EditTimeSpan({ startTime, endTime, use24H, onSave, onCan
             <View style={styles.actionsContainer}>
                 <Pressable style={styles.actionButton} onPress={() => onSave?.({ startTime, endTime })}><Text>Save</Text></Pressable>
                 <Pressable style={styles.actionButton} onPress={onCancel}><Text>Cancel</Text></Pressable>
+                <Pressable style={styles.actionButton} onPress={onDelete}><Text>Delete</Text></Pressable>
             </View>
         </View>
     );
