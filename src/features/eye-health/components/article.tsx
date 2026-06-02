@@ -12,7 +12,7 @@ export default function Article({ title, description }: ArticleProps) {
                 <Text style={styles.title}>{title}</Text>
             </View>
             <Text style={styles.description}>{description}</Text>
-            {/* <Text style={styles.readMore}>Read more</Text> */}
+            <Text style={styles.readMore}>Read more</Text>
         </View>
     );
 }
@@ -20,29 +20,30 @@ export default function Article({ title, description }: ArticleProps) {
 const styles = StyleSheet.create({
     titleContainer: {
         alignSelf: 'flex-start',
-        borderWidth: 2,
-        borderColor: '#15151d',
-        padding: 2,
-        marginBottom: 25,
+        borderBottomWidth: 2,
+        borderBottomColor: '#1500FF',
+        paddingBottom: 2,
+        marginBottom: 15,
     },
     title: {
         alignSelf: 'flex-start',
         fontSize: 20,
         fontFamily: 'americanTypewriter',
-        color: '#FFF',
+        color: '#1500FF',
         paddingVertical: 7,
-        paddingHorizontal: 14,
-        backgroundColor: '#15151d'
+        borderBottomWidth: 2,
+        borderBottomColor: '#1500FF',
     },
     description: {
         fontFamily: 'americanTypewriter',
         fontSize: 18,
         color: '#000',
     },
-    // readMore: {
-    //     marginTop: 5,
-    //     fontFamily: 'americanTypewriter',
-    //     fontSize: 18,
-    //     color: '#1500FF',
-    // }
+    readMore: {
+        marginTop: 10,
+        fontFamily: 'americanTypewriter',
+        fontSize: 18,
+        color: '#1500FF',
+        textDecorationLine: 'underline',
+    }
 });

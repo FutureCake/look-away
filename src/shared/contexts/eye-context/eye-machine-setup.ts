@@ -1,6 +1,7 @@
 import { Linking } from "react-native";
 import { assign, fromPromise, setup } from "xstate";
 import { notifications } from "../../libs/notifications";
+import { useAppStore } from "../../stores/app";
 import { EyeAction, EyeEvent } from "../../types";
 
 type Input = {
@@ -22,7 +23,8 @@ export const eyeMachineSetup = setup({
     },
     actors: {
         checkPermissions: fromPromise(async () => {
-            return await notifications.hasPermissions();
+            // notifications.hasPermissions()
+            return await new Promise((resolve) => resolve('granted'));
         }),
         setupNotifications: fromPromise(async () => {
             return await notifications.setup();
@@ -40,6 +42,10 @@ export const eyeMachineSetup = setup({
         },
         openSettings: () => {
             Linking.openSettings();
+        },
+        scheduleNotifications: () => {
+            const safezones = Object.values(useAppStore.getState().eyeSafeZones);
+            notifications.scheduleDailyNotifications(safezones);
         },
         updatePrimary: assign(
             ({ context }, params: { cta: string; stateMessage?: string, userAction?: EyeAction }) => {

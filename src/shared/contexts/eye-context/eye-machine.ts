@@ -6,17 +6,25 @@ export const eyeMachine = eyeMachineSetup.createMachine({
     context: ({ input }) => ({
         stateMessage: undefined,
         cta: 'Help your eyes',
+        userAction: 'START',
         deps: input
     }),
     states: {
         dormant: {
+            on: {
+                START: {
+                    target: 'checking_permissions',
+                },
+            },
+        },
+        checking_permissions: {
             invoke: {
                 src: 'checkPermissions',
                 onDone: [
                     {
                         guard: ({ event }) => event.output === 'granted',
                         target: 'alerting',
-                        actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }),
+                        actions: [...updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }), 'scheduleNotifications'],
                     },
                     {
                         guard: ({ event }) => event.output === 'denied',
@@ -24,21 +32,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
                         actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
                     },
                 ],
-            },
-            on: {
-                NC_REQUEST: {
-                    target: 'requesting_permissions',
-                },
-                NC_ALLOWED: {
-                    target: 'alerting',
-                    actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' })
-
-                },
-                NC_DENIED: {
-                    target: 'alerting_denied',
-                    actions: updatePrimaryAction({ cta: 'Go to settings', stateMessage: 'Allow notifications, its pointless otherwise...' }),
-                }
-            },
+            }
         },
         requesting_permissions: {
             invoke: {
@@ -47,7 +41,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
                     {
                         guard: ({ event }) => event.output === true,
                         target: 'alerting',
-                        actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }),
+                        actions: [...updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' }), 'scheduleNotifications'],
                     },
                     {
                         target: 'alerting_denied',
@@ -75,7 +69,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
             on: {
                 PAUSE: {
                     target: 'paused',
-                    actions: updatePrimaryAction({ cta: 'Resume alerts', stateMessage: 'Alerts paused' })
+                    actions: updatePrimaryAction({ cta: 'Resume alerts', stateMessage: 'Alerts paused', userAction: 'RESUME' })
                 },
                 NC_DENIED: {
                     target: 'alerting_denied',
@@ -83,7 +77,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
                 },
                 SHOULD_LOOK_AWAY: {
                     target: 'should_look_away',
-                    actions: updatePrimaryAction({ cta: 'Hold while looking away', stateMessage: 'Hold while looking away' }),
+                    actions: updatePrimaryAction({ cta: 'Hold while looking away', stateMessage: 'Hold while looking away', userAction: 'LOOKING_AWAY' }),
                 },
                 ENABLE_SCHEDULED_PAUSE: {
                     target: 'scheduled_pause',
@@ -95,7 +89,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
             on: {
                 RESUME: {
                     target: 'alerting',
-                    actions: updatePrimaryAction({ cta: 'Pause alerts' })
+                    actions: updatePrimaryAction({ cta: 'Pause alerts', userAction: 'PAUSE' })
                 },
                 NC_DENIED: {
                     target: 'alerting_denied',

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { EyeMachineProvider } from './shared/contexts/eye-context';
@@ -17,12 +18,14 @@ export default function App() {
     }, [appState])
 
     return (
-        <KeyboardProvider>
-            <SafeAreaProvider>
-                <EyeMachineProvider>
-                    <Navigation />
-                </EyeMachineProvider>
-            </SafeAreaProvider>
-        </KeyboardProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardProvider>
+                <SafeAreaProvider>
+                    <EyeMachineProvider>
+                        <Navigation />
+                    </EyeMachineProvider>
+                </SafeAreaProvider>
+            </KeyboardProvider>
+        </GestureHandlerRootView>
     );
 }

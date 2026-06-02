@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../../components/button";
+import SwipeMessage from "../../components/swipe-message";
 import TitledContent from "../../components/titled-content";
 import { useEyeMachine } from "../../shared/contexts/eye-context";
 
@@ -11,14 +12,15 @@ export default function HomeScreen() {
 
     const handleMainButtonPress = () => {
         if (!userAction) return;
+        console.log('Main button pressed, user action:', userAction);
         send({ type: userAction });
     }
 
     return (
         <TitledContent title={"love\nyour\neyes"} scrollPadding={80}>
-            <View style={styles.primaryActionGroup}>
+            <View>
                 <Button title={cta} onPress={handleMainButtonPress} />
-                {stateMsg && <Text style={styles.stateMsg}>{stateMsg}</Text>}
+                {stateMsg && <SwipeMessage style={styles.stateMsg} message={stateMsg} onClose={() => {/* optionally send dismiss event */ }} />}
             </View>
             <Text style={styles.description}>{"Your eyes need to look at something distant every 20 minutes for 20 seconds to stay healthy.\n\nWe will send you a notification every 20 minutes to remind you to look into the distance for 20 seconds.\n\nDon't want to get spammed all the time? Set a safe zone below:"}</Text>
             <Button title="Set eye safe zone" onPress={() => nav.navigate('SafeZone')} />
@@ -33,12 +35,7 @@ const styles = StyleSheet.create({
         gap: 30,
     },
     stateMsg: {
-        fontSize: 18,
-        fontFamily: 'americanTypewriter',
-        color: '#1500FF',
-        borderLeftWidth: 2,
-        borderColor: '#1500FF',
-        paddingHorizontal: 15
+        marginTop: 30
     },
     description: {
         fontSize: 18,
