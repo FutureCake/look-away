@@ -113,7 +113,7 @@ export const eyeMachine = eyeMachineSetup.createMachine({
             on: {
                 LOOKING_AWAY: {
                     target: 'looking_away',
-                    actions: updatePrimaryAction({ cta: 'Yes me', stateMessage: 'Hold the button while looking away' }),
+                    actions: updatePrimaryAction({ cta: 'Yes me', stateMessage: 'Hold the button while looking away', userAction: 'RESUME' }),
                 },
             }
         },

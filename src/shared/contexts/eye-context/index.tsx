@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react';
 import { addNotificationResponseReceivedListener } from 'expo-notifications';
-import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { EventFrom, SnapshotFrom } from 'xstate';
 import { notifications } from '../../libs/notifications';
@@ -19,23 +19,18 @@ const EyeMachineContext = createContext<EyeMachineContextType | null>(null);
 
 export function EyeMachineProvider({ children }: PropsWithChildren) {
 
-    const [stateMsg, setStateMsg] = useState<string | undefined>(undefined);
-    const [cta, setCta] = useState<string>('Save your eyes');
-    const [userAction, setUserAction] = useState<EyeAction>('START');
-
     const [state, send] = useMachine(eyeMachine, {
         input: {
+
             dispatchHaptics: () => {
                 console.log('Dispatching haptics');
             },
-            onCtaChange: setCta,
-            onStateMessageChange: setStateMsg,
-            onUserActionChange: (action?: EyeAction) => {
-                if (!action) return;
-                setUserAction(action);
-            }
         },
     });
+
+    const stateMsg = state.context.stateMessage;
+    const cta = state.context.cta;
+    const userAction = state.context.userAction;
 
     const appState = useRef(AppState.currentState);
 
